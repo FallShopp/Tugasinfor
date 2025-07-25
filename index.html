@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tugas Informatika</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      font-family: 'Roboto', sans-serif;
+      background: #0a0a1e;
+      color: #e0e0e0;
+      height: 100%;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #0a0a1e;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .loader .neon-spinner {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 8px solid;
+      border-image: linear-gradient(135deg, #00ffff, #9400d3) 1;
+      border-top-color: transparent;
+      border-left-color: transparent;
+      animation: spin 1.4s linear infinite;
+      margin-bottom: 25px;
+    }
+    .loader span {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+      animation: glowText 1.5s ease-in-out infinite;
+      letter-spacing: 1px;
+    }
+    @keyframes glowText {
+      0%, 100% { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+      50% { color: #9400d3; text-shadow: 0 0 10px #9400d3; }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 30px 15px;
+      animation: fadeIn 1.5s ease-in;
+      display: none;
+    }
+    .page {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .hidden { display: none; }
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      margin-bottom: 12px;
+      text-shadow: 0 0 12px #00ffff;
+    }
+    h2 {
+      font-size: 1.15rem;
+      margin-bottom: 12px;
+      color: #00ffff;
+    }
+    .subtitle {
+      font-size: 0.95rem;
+      color: #b8d9ff;
+      margin-bottom: 25px;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00ffff, #9400d3);
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 1rem;
+      flex: 1;
+      margin: 5px;
+      transition: transform 0.3s ease, box-shadow 0.2s;
+    }
+    .btn:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.9);
+      transform: scale(1.05);
+    }
+    .btn.clicked {
+      transform: scale(0.92);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.6) inset;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .button-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .qr-frame {
+      border: 3px solid #00ffff;
+      padding: 10px;
+      border-radius: 15px;
+      background: #0a0a1e;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      max-width: 250px;
+      margin: 0 auto 20px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .qr-frame:hover { transform: scale(1.03); }
+    .qr-frame video {
+      width: 100%;
+      border-radius: 10px;
+      display: block;
+    }
+    details {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,255,255,0.2);
+      margin: 20px 0;
+      color: #c8e7ff;
+    }
+    summary {
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #00000088, #1c1c40aa);
+      border-radius: 10px;
+      color: #00ffff;
+      text-align: center;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .overlay.active {
+      display: flex;
+    }
+    .overlay video {
+      max-width: 90%;
+      max-height: 90vh;
+      border-radius: 12px;
+      border: 2px solid #00ffff;
+    }
+
+    /* Typewriter cursor */
+    #typewriter::after {
+      content: '|';
+      animation: blink 1s infinite;
+      color: #00ffff;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="loader">
+    <div class="neon-spinner"></div>
+    <span>INITIALIZING...</span>
+  </div>
+
+  <audio id="background-music" loop>
+    <source src="https://cloudkuimages.com/uploads/audios/67e6491a09d0d.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="container" id="mainContent">
+    <div class="page active" id="about">
+      <h1>Tugas Informatika</h1>
+      <h2>Hallo, Saya Naufal Syafiq Azra</h2>
+      <p class="subtitle"><span id="typewriter"></span></p>
+      <button class="btn" onclick="showPayment()">Lanjut</button>
+    </div>
+
+    <div class="page hidden" id="payment">
+      <h1>Tugas Informatika</h1>
+      <p class="subtitle">Silahkan klik vidio yang sudah tersedia di bawah...</p>
+
+      <div class="qr-frame" onclick="zoomQR()">
+        <video id="qrisVideo" autoplay muted loop playsinline preload="auto">
+          <source src="https://files.catbox.moe/v1a4bq.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <p class="subtitle" style="font-size: 0.9rem;">Jika ada yang di tanya/tidak ngerti silah kan bertanya, klik contact untuk bertanya</p>
+
+      <details>
+        <summary>Kata Kata Hari Ini</summary>
+        <p><strong>Fall Sa'id:</strong>"Aku ingin menjadi programmer yang bisa membuat program cinta untuk kamu, agar kamu tahu betapa aku mencintaimu, dan setiap baris kode yang aku tulis adalah untuk kamu."</p>
+      </details>
+
+      <div class="button-group">
+        <a href="https://wa.me/6285177289592" target="blank" class="btn">Contact Fall</a>
+      </div>
+
+      <button class="btn" onclick="showAbout()">Return_Kembali</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="qrOverlay" onclick="closeZoom()">
+    <video id="zoomedQR" autoplay muted loop controls></video>
+  </div>
+
+  <script>
+    const loader = document.getElementById('loader');
+    const mainContent = document.getElementById('mainContent');
+    const aboutPage = document.getElementById('about');
+    const paymentPage = document.getElementById('payment');
+    const qrOverlay = document.getElementById('qrOverlay');
+    const zoomedQR = document.getElementById('zoomedQR');
+    const qrisVideo = document.getElementById('qrisVideo');
+    const musicPlayer = document.getElementById('background-music');
+
+    function typeWriter(text, elementId, speed = 40) {
+      const target = document.getElementById(elementId);
+      let i = 0;
+      function typing() {
+        if (i < text.length) {
+          target.textContent += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        }
+      }
+      typing();
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        loader.style.display = 'none';
+        mainContent.style.display = 'block';
+        typeWriter(
+          "Saya membuat web simpel ini hanya untuk tugas informatika yaitu, tutorial cara deploy html nya lewat github lalu ke vercel, Klik lanjut untuk melihat video tutorial nya, Simak dengan baik...",
+          "typewriter",
+          35
+        );
+      }, 2200);
+    });
+
+    function showPayment() {
+      switchPage(aboutPage, paymentPage);
+      playMusic();
+    }
+
+    function showAbout() {
+      switchPage(paymentPage, aboutPage);
+    }
+
+    function switchPage(pageToHide, pageToShow) {
+      pageToHide.classList.remove('active');
+      pageToHide.classList.add('hidden');
+      pageToShow.classList.remove('hidden');
+      pageToShow.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function zoomQR() {
+      zoomedQR.src = qrisVideo.currentSrc;
+      qrOverlay.classList.add('active');
+    }
+
+    function closeZoom() {
+      qrOverlay.classList.remove('active');
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && qrOverlay.classList.contains('active')) {
+        closeZoom();
+      }
+    });
+
+    function playMusic() {
+      if (musicPlayer) {
+        musicPlayer.play().catch(error => {
+          console.warn("Music autoplay failed:", error);
+        });
+      }
+    }
+
+    // Efek klik tombol
+    document.querySelectorAll('.btn').forEach(button => {
+      button.addEventListener('click', () => {
+        button.classList.add('clicked');
+        navigator.vibrate?.(70);
+        setTimeout(() => {
+          button.classList.remove('clicked');
+        }, 150);
+      });
+    });
+  </script>
+</body>
+</html>
